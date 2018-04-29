@@ -12,7 +12,8 @@
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest --coverage src"
+    "test": "jest --coverage src",
+    "test:ci": "jest --coverage src && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "devDependencies": {
     "coveralls": "^3.0.0",
