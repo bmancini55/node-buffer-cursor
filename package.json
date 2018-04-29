@@ -1,5 +1,5 @@
 {
-  "name": "buffer-cursor",
+  "name": "simple-buffer-cursor",
   "version": "1.0.0",
   "description": "Read and write to a buffer easily",
   "keywords": [

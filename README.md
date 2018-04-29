@@ -1,17 +1,18 @@
-# buffer-cursor
+# simple-buffer-cursor
 
 [![CircleCI](https://circleci.com/gh/bmancini55/node-buffer-cursor/tree/master.svg?style=shield)](https://circleci.com/gh/bmancini55/node-buffer-cursor/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/bmancini55/node-buffer-cursor/badge.svg?branch=master)](https://coveralls.io/github/bmancini55/node-buffer-cursor?branch=master)
 
-Simplify reading and writing to buffers by internally maintaining the position. This library exposes a wrapper for a buffer that uses similar read and write methods to those found in the Node buffer API.
+Simplify reading and writing to buffers by internally maintaining the position. This library exposes a wrapper for a buffer that uses similar read and write methods to those found in the Node Buffer API.
 
 Usage:
+
 ```bash
-npm install buffer-cursor
+npm install simple-buffer-cursor
 ```
 
 ```javascript
-const BufferCursor = require('buffer-cursor');
+const BufferCursor = require('simple-buffer-cursor');
 
 let buffer = BufferCursor(Buffer.alloc(8));
 buffer.writeUInt8(1);
@@ -26,6 +27,7 @@ console.log(buffer.readBytes());
 ```
 
 ## API
+
 * `position: number` - the current buffer cursor position
 * `eof: bool` - whether the current position is at the end of the buffer
 * `buffer: Buffer` - the underlying buffer
