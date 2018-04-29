@@ -15,6 +15,10 @@ class BufferCursor {
     return this._position === this._buffer.length;
   }
 
+  get buffer() {
+    return this._buffer;
+  }
+
   readUInt8() {
     return this._readStandard(this.readUInt8.name, 1);
   }
@@ -70,6 +74,8 @@ class BufferCursor {
   }
 
   writeBytes(buffer) {
+    if (this._position + buffer.length > this._buffer.length)
+      throw new RangeError('Index out of range');
     buffer.copy(this._buffer, this._position);
     this._position += buffer.length;
   }

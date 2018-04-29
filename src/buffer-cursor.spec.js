@@ -76,41 +76,153 @@ describe('readBytes', () => {
   });
 });
 
-describe('position', () => {
+const writeTests = [
+  {
+    method: 'writeUInt8',
+    instance: new BufferCursor(Buffer.alloc(3)),
+    assertions: [Buffer.from([1, 0, 0]), Buffer.from([1, 2, 0]), Buffer.from([1, 2, 3])],
+  },
+  {
+    method: 'writeUInt16LE',
+    instance: new BufferCursor(Buffer.alloc(6)),
+    assertions: [
+      Buffer.from([1, 0, 0, 0, 0, 0]),
+      Buffer.from([1, 0, 2, 0, 0, 0]),
+      Buffer.from([1, 0, 2, 0, 3, 0]),
+    ],
+  },
+  {
+    method: 'writeUInt16BE',
+    instance: new BufferCursor(Buffer.alloc(6)),
+    assertions: [
+      Buffer.from([0, 1, 0, 0, 0, 0]),
+      Buffer.from([0, 1, 0, 2, 0, 0]),
+      Buffer.from([0, 1, 0, 2, 0, 3]),
+    ],
+  },
+  {
+    method: 'writeUInt32LE',
+    instance: new BufferCursor(Buffer.alloc(12)),
+    assertions: [
+      Buffer.from([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+      Buffer.from([1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0]),
+      Buffer.from([1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0]),
+    ],
+  },
+  {
+    method: 'writeUInt32BE',
+    instance: new BufferCursor(Buffer.alloc(12)),
+    assertions: [
+      Buffer.from([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]),
+      Buffer.from([0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0]),
+      Buffer.from([0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]),
+    ],
+  },
+];
+
+for (let writeTest of writeTests) {
+  describe(writeTest.method, () => {
+    test('should write at start', () => {
+      writeTest.instance[writeTest.method](1);
+      expect(writeTest.instance.buffer).toEqual(writeTest.assertions[0]);
+    });
+    test('should write in middle', () => {
+      writeTest.instance[writeTest.method](2);
+      expect(writeTest.instance.buffer).toEqual(writeTest.assertions[1]);
+    });
+    test('should write at end', () => {
+      writeTest.instance[writeTest.method](3);
+      expect(writeTest.instance.buffer).toEqual(writeTest.assertions[2]);
+    });
+    test('should throw when out of bounds', () => {
+      expect(() => writeTest.instance[writeTest.method]()).toThrow('Index out of range');
+    });
+  });
+}
+
+describe('writeBytes', () => {
   let buffer;
   beforeAll(() => {
-    buffer = new BufferCursor(Buffer.from([1, 2, 0, 0, 3, 4, 0, 0, 0, 0, 0, 0, 5, 6, 0, 0, 0, 7]));
+    buffer = new BufferCursor(Buffer.alloc(8));
+  });
+  test('should write at start', () => {
+    buffer.writeBytes(Buffer.from([1]));
+    expect(buffer.buffer).toEqual(Buffer.from([1, 0, 0, 0, 0, 0, 0, 0]));
+  });
+  test('should write in middle', () => {
+    buffer.writeBytes(Buffer.from([2, 2]));
+    expect(buffer.buffer).toEqual(Buffer.from([1, 2, 2, 0, 0, 0, 0, 0]));
+  });
+  test('should throw if write buffer exceeds cursor', () => {
+    expect(() => buffer.writeBytes(Buffer.from([6, 6, 6, 6, 6, 6]))).toThrow('Index out of range');
+  });
+  test('should write to end', () => {
+    buffer.writeBytes(Buffer.from([5, 5, 5, 5, 5]));
+    expect(buffer.buffer).toEqual(Buffer.from([1, 2, 2, 5, 5, 5, 5, 5]));
+  });
+});
+
+describe('position', () => {
+  let readbuf;
+  let writebuf;
+  beforeAll(() => {
+    readbuf = new BufferCursor(Buffer.from([1, 2, 0, 0, 3, 4, 0, 0, 0, 0, 0, 0, 5, 6, 0, 0, 0, 7]));
+    writebuf = new BufferCursor(Buffer.alloc(18));
   });
   test('should start at 0', () => {
-    expect(buffer.position).toBe(0);
+    expect(readbuf.position).toBe(0);
   });
   test('should advance by 1 with readUInt8', () => {
-    buffer.readUInt8();
-    expect(buffer.position).toBe(1);
+    readbuf.readUInt8();
+    expect(readbuf.position).toBe(1);
   });
   test('should advance by 2 with readUInt16LE', () => {
-    buffer.readUInt16LE();
-    expect(buffer.position).toBe(3);
+    readbuf.readUInt16LE();
+    expect(readbuf.position).toBe(3);
   });
   test('should advance by 2 with readUInt16BE', () => {
-    buffer.readUInt16BE();
-    expect(buffer.position).toBe(5);
+    readbuf.readUInt16BE();
+    expect(readbuf.position).toBe(5);
   });
   test('should advance by 4 with readUInt32LE', () => {
-    buffer.readUInt32LE();
-    expect(buffer.position).toBe(9);
+    readbuf.readUInt32LE();
+    expect(readbuf.position).toBe(9);
   });
   test('should advance by 4 with readUInt32BE', () => {
-    buffer.readUInt32BE();
-    expect(buffer.position).toBe(13);
+    readbuf.readUInt32BE();
+    expect(readbuf.position).toBe(13);
   });
   test('should advance by read amount with readBytes', () => {
-    buffer.readBytes(1);
-    expect(buffer.position).toBe(14);
+    readbuf.readBytes(1);
+    expect(readbuf.position).toBe(14);
   });
   test('should advance by rest with readBytes without len', () => {
-    buffer.readBytes();
-    expect(buffer.position).toBe(18);
+    readbuf.readBytes();
+    expect(readbuf.position).toBe(18);
+  });
+  test('should advance by 1 with writeUInt8', () => {
+    writebuf.writeUInt8(1);
+    expect(writebuf.position).toBe(1);
+  });
+  test('should advance by 2 with writeUInt16LE', () => {
+    writebuf.writeUInt16LE(1);
+    expect(writebuf.position).toBe(3);
+  });
+  test('should advance by 2 with writeUInt16BE', () => {
+    writebuf.writeUInt16BE(1);
+    expect(writebuf.position).toBe(5);
+  });
+  test('should advance by 4 with writeUInt32LE', () => {
+    writebuf.writeUInt32LE(1);
+    expect(writebuf.position).toBe(9);
+  });
+  test('should advance by 4 with writeUInt32BE', () => {
+    writebuf.writeUInt32BE(1);
+    expect(writebuf.position).toBe(13);
+  });
+  test('should advance by buffer length with writeBytes', () => {
+    writebuf.writeBytes(Buffer.alloc(5));
+    expect(writebuf.position).toBe(18);
   });
 });
 
