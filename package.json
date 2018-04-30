@@ -1,6 +1,6 @@
 {
   "name": "simple-buffer-cursor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Read and write to a buffer easily",
   "keywords": [
     "buffer",
@@ -10,6 +10,7 @@
   ],
   "author": "Brian Mancini <bmancini@gmail.com>",
   "license": "MIT",
+  "repository": "bmancini55/node-buffer-cursor",
   "main": "src/index.js",
   "scripts": {
     "test": "jest --coverage src",

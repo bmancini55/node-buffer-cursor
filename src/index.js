@@ -1,3 +1,5 @@
-const BufferCursor = require("./buffer-cursor");
+const BufferCursor = require('./buffer-cursor');
 
-module.exports = buffer => new BufferCursor(buffer);
+module.exports = {
+  from: buffer => new BufferCursor(buffer),
+};
