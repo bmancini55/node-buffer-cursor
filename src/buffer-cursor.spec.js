@@ -74,6 +74,10 @@ describe('readBytes', () => {
     buffer.readBytes(1);
     expect(() => buffer.readBytes()).toThrow('Index out of range');
   });
+  test('should return empty buffer is read length is 0', () => {
+    buffer = new BufferCursor(Buffer.alloc(0));
+    expect(buffer.readBytes(0)).toEqual(Buffer.alloc(0));
+  });
 });
 
 const writeTests = [
@@ -158,6 +162,10 @@ describe('writeBytes', () => {
   });
   test('should write to end', () => {
     buffer.writeBytes(Buffer.from([5, 5, 5, 5, 5]));
+    expect(buffer.buffer).toEqual(Buffer.from([1, 2, 2, 5, 5, 5, 5, 5]));
+  });
+  test('should not care about writing zero byte buffer', () => {
+    buffer.writeBytes(Buffer.alloc(0));
     expect(buffer.buffer).toEqual(Buffer.from([1, 2, 2, 5, 5, 5, 5, 5]));
   });
 });

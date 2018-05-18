@@ -40,7 +40,9 @@ class BufferCursor {
   }
 
   readBytes(len) {
-    if (len) {
+    if (len === 0) {
+      return Buffer.alloc(0);
+    } else if (len > 0) {
       if (this._position + len > this._buffer.length) throw new RangeError('Index out of range');
       let result = this._buffer.slice(this._position, this._position + len);
       this._position += len;
