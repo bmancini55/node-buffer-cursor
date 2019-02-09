@@ -76,6 +76,7 @@ class BufferCursor {
   }
 
   writeBytes(buffer) {
+    if (!buffer || !buffer.length) return;
     if (this._position + buffer.length > this._buffer.length)
       throw new RangeError('Index out of range');
     buffer.copy(this._buffer, this._position);

@@ -149,6 +149,14 @@ describe('writeBytes', () => {
   beforeAll(() => {
     buffer = new BufferCursor(Buffer.alloc(8));
   });
+  test('should ignore writing a null', () => {
+    buffer.writeBytes(null);
+    expect(buffer.buffer).toEqual(Buffer.from([0, 0, 0, 0, 0, 0, 0, 0]));
+  });
+  test('should ignore writing an empty buffer', () => {
+    buffer.writeBytes(Buffer.alloc(0));
+    expect(buffer.buffer).toEqual(Buffer.from([0, 0, 0, 0, 0, 0, 0, 0]));
+  });
   test('should write at start', () => {
     buffer.writeBytes(Buffer.from([1]));
     expect(buffer.buffer).toEqual(Buffer.from([1, 0, 0, 0, 0, 0, 0, 0]));
